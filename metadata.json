@@ -1,0 +1,5 @@
+{
+  "name": "NutriScan AI",
+  "description": "AI-powered personalized shopping assistant. Bold typography edition.",
+  "requestFramePermissions": ["camera"]
+}

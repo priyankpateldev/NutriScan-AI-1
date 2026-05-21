@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Anton&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Anton", "Outfit", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-brand-bg: #F8F7F2;
+  --color-brand-ink: #1A1A1A;
+  --color-brand-accent-blue: #2563EB;
+  --color-brand-accent-red: #DC2626;
+}
+
+@layer base {
+  body {
+    @apply bg-brand-bg text-brand-ink antialiased font-sans m-0 h-screen overflow-hidden;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tighter uppercase;
+  }
+}
+
+.bold-card {
+  @apply bg-white rounded-sm border border-brand-ink/10 shadow-sm relative transition-all;
+}
+
+.bold-card-accents::before {
+  content: "";
+  @apply absolute -top-2 -left-2 w-8 h-8 border-t-2 border-l-2 border-brand-ink;
+}
+
+.bold-card-accents::after {
+  content: "";
+  @apply absolute -bottom-2 -right-2 w-8 h-8 border-b-2 border-r-2 border-brand-ink;
+}
+
+.verdict-huge {
+  @apply text-[6rem] sm:text-[8rem] md:text-[10rem] lg:text-[7rem] leading-[0.8] font-black tracking-tighter uppercase;
+}
+
+.micro-label {
+  @apply text-[10px] font-black uppercase tracking-[0.3em] opacity-40;
+}
+
+.btn-black {
+  @apply bg-brand-ink text-white font-black text-xs uppercase tracking-widest px-8 py-4 border-2 border-brand-ink hover:bg-transparent hover:text-brand-ink transition-all;
+}
+
+.btn-outline {
+  @apply bg-transparent text-brand-ink font-black text-xs uppercase tracking-widest px-8 py-4 border-2 border-brand-ink hover:bg-brand-ink hover:text-white transition-all;
+}

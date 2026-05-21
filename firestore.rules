@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 0.1 Global Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    // 1. Users Collection
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) 
+        && isValidUser(incoming())
+        && incoming().uid == request.auth.uid;
+      allow update: if isOwner(userId)
+        && isValidUser(incoming())
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt;
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'createdAt'])
+        && data.uid is string && data.uid.size() > 0
+        && data.createdAt is timestamp
+        // Optional fields
+        && (!data.keys().contains('displayName') || data.displayName is string)
+        && (!data.keys().contains('preferences') || (
+          data.preferences is map
+          && (!data.preferences.keys().contains('diet') || data.preferences.diet in ['none', 'vegan', 'vegetarian', 'keto', 'paleo', 'gluten-free'])
+        ));
+    }
+
+    // 2. Scans Collection
+    match /scans/{scanId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() 
+        && isValidScan(incoming())
+        && incoming().userId == request.auth.uid
+        && incoming().scannedAt == request.time;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    function isValidScan(data) {
+      return data.keys().hasAll(['userId', 'productName', 'category', 'analysis', 'scannedAt'])
+        && data.userId is string && data.userId.size() > 0
+        && data.productName is string && data.productName.size() <= 500
+        && data.category in ['food', 'beverage', 'personal-care', 'household', 'other']
+        && data.analysis is map
+        && data.analysis.keys().hasAll(['summary', 'isGoodMatch'])
+        && data.scannedAt is timestamp;
+    }
+  }
+}

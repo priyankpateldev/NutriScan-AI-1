@@ -1,0 +1,60 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Stores user dietary preferences and profile information.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "preferences": {
+          "type": "object",
+          "properties": {
+            "allergies": { "type": "array", "items": { "type": "string" } },
+            "diet": { "type": "string", "enum": ["none", "vegan", "vegetarian", "keto", "paleo", "gluten-free"] },
+            "goals": { "type": "array", "items": { "type": "string" } },
+            "healthConditions": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "createdAt"]
+    },
+    "ProductScan": {
+      "title": "Product Scan",
+      "description": "Stores history of scanned products and AI analysis.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "productName": { "type": "string" },
+        "category": { "type": "string", "enum": ["food", "beverage", "personal-care", "household", "other"] },
+        "imageUrl": { "type": "string" },
+        "analysis": {
+          "type": "object",
+          "properties": {
+            "nutritionInfo": { "type": "object" },
+            "ingredients": { "type": "array", "items": { "type": "string" } },
+            "score": { "type": "number" },
+            "summary": { "type": "string" },
+            "isGoodMatch": { "type": "boolean" },
+            "recommendation": { "type": "string" },
+            "warnings": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "scannedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "productName", "category", "analysis", "scannedAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "Users collection for profile and settings."
+    },
+    "scans/{scanId}": {
+      "schema": "ProductScan",
+      "description": "Stores all product scans for all users."
+    }
+  }
+}
